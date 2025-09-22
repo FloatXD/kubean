@@ -20,7 +20,7 @@ jobs:
       spray_short_sha: ${{ steps.output_variables.outputs.spray_short_sha }}
       container_tag: ${{ steps.output_variables.outputs.container_tag }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: output environment variable
@@ -59,11 +59,11 @@ jobs:
       packages: write
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ needs.get_ref.outputs.ref }}
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.3
       - name: verify_kubespray_e2e_test

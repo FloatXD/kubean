@@ -43,12 +43,12 @@ jobs:
       packages: write
       contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ needs.get_ref.outputs.ref }}
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.3
 
@@ -58,11 +58,19 @@ jobs:
           version: v2.1.0
           args: --timeout=10m
 
+      - name: install ansible requirements
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install ansible-core
+          ansible-galaxy collection install ansible.posix
+
       - name: ansible-lint
-        uses: ansible/ansible-lint@v25.6.1
+        uses: ansible/ansible-lint@v25.8.2
+        with:
+          args: "playbooks/"
 
       - name: Run Trivy vulnerability scanner in fs mode
-        uses: aquasecurity/trivy-action@0.32.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -77,12 +85,12 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ needs.get_ref.outputs.ref }}
 
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.3
 
@@ -98,7 +106,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -106,14 +114,14 @@ jobs:
         run: |
           ORGANIZATION_NAME=$(echo ${GITHUB_REPOSITORY}| awk -F "/" '{print $1}')
           echo "REPO=${ORGANIZATION_NAME,,}" >> ${GITHUB_ENV}
-          echo "KUBESPRAY_TAG=$(awk '/kubespray_version/ {printf("%.7s",$2)}' version.yml)" >> ${GITHUB_ENV}
+          echo "KUBESPRAY_TAG=$(awk '/kubespray_version/ {printf("%.7s",$2)}' version.yml)-ansible9" >> ${GITHUB_ENV}
 
       - name: Echo env
         run: |
           echo "REPO: ${{ env.REPO }}"
           echo "KUBESPRAY_TAG: ${{ env.KUBESPRAY_TAG }}"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ needs.get_ref.outputs.ref }}
@@ -191,11 +199,11 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           ref: ${{ needs.get_ref.outputs.ref }}
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.3
       - name: e2e
